@@ -1,3 +1,4 @@
 data/*
 *.pickle
 nohup.out
+*.csv
