@@ -2,3 +2,4 @@ data/*
 *.pickle
 nohup.out
 *.csv
+*.pkl
