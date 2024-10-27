@@ -219,8 +219,7 @@ def calculate_second_neib_visits(group_df):
         second_deg_store_placekey = second_neib_df[second_neib_df['SRC_PLACEKEY'] == first_deg_store]['DST_PLACEKEY'].to_list()
         second_deg_store_distance = second_neib_df[second_neib_df['SRC_PLACEKEY'] == first_deg_store]['Distance_Km'].to_list()        
         
-        # for i in range(len(second_deg_store_placekey)):
-        for i in range(10):
+        for i in range(len(second_deg_store_placekey)):
             visits = group_df[group_df['PLACEKEY'] == second_deg_store_placekey[i]]['visits_by_day']
             if (len(visits) != 0):
                 inv_visits += (1/second_deg_store_distance[i]) * visits.values[0]
@@ -259,8 +258,7 @@ def calculate_second_neib_mean_reviews(group_df):
         second_deg_store_placekey = second_neib_df_local_reviews[second_neib_df_local_reviews['SRC_PLACEKEY'] == first_deg_store]['DST_PLACEKEY'].to_list()
         second_deg_store_distance = second_neib_df_local_reviews[second_neib_df_local_reviews['SRC_PLACEKEY'] == first_deg_store]['Distance_Km'].to_list()
         
-        # for i in range(len(second_deg_store_placekey)):
-        for i in range(10):
+        for i in range(len(second_deg_store_placekey)):
             second_neib_brand_stores_local_reviews = group_df[group_df['PLACEKEY'] == second_deg_store_placekey[i]][['localized_fb_reviews_60_days',
                                                                                                                 'localized_ig_reviews_60_days',
                                                                                                                 'localized_tw_reviews_60_days']]
@@ -316,8 +314,7 @@ for unique_neib_index in range(1):
     
     focal_store_information_final = None
     
-    # for foc_store_index in range(len(store_keys_foc_brand)):
-    for foc_store_index in range(1):
+    for foc_store_index in range(len(store_keys_foc_brand)):
         foc_store = store_keys_foc_brand[foc_store_index]
         logging.info("############ Focal Store [{}/{}]: {} ######################".format(foc_store_index+1, len(store_keys_foc_brand), foc_store))
         foc_store_all_first_degree_neibs = distance_results[(distance_results['From_PLACEKEY'] == foc_store) & (distance_results['Distance_km'] <= 16.0934)]['To_PLACEKEY'].to_list()
