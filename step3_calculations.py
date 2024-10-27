@@ -215,7 +215,8 @@ def calculate_second_neib_visits(group_df):
     inv_visits_secondneibmean_exp = 0
     date_count = date_count + 1
 
-    logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Visits Data...[First Degree Stores: {}, Date Count: {}]".format(foc_store_index+1, len(store_keys_foc_brand),
+    if date_count%30 == 0:
+        logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Visits Data...[First Degree Stores: {}, Date Count: {}]".format(foc_store_index+1, len(store_keys_foc_brand),
                                                                                                                                 len(first_deg_stores), date_count))
     
     for first_deg_store_index in range(len(first_deg_stores)):
@@ -258,8 +259,9 @@ def calculate_second_neib_mean_reviews(group_df):
     num_reviews_tw_secondneibmean_exp = 0
     
     date_count = date_count + 1
-
-    logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Local Reviews Data...[First Degree Stores: {}, Date Count: {}]".format(foc_store_index+1,
+    
+    if date_count%30 == 0:
+        logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Local Reviews Data...[First Degree Stores: {}, Date Count: {}]".format(foc_store_index+1,
                                                                                                                                           len(store_keys_foc_brand),
                                                                                                                                           len(first_deg_stores_local_reviews),
                                                                                                                                           date_count))
@@ -352,7 +354,10 @@ for unique_neib_index in range(10):
         foc_store_time = travel_time[(travel_time['From_PLACEKEY'] == foc_store) & (travel_time['To_PLACEKEY'].isin(foc_store_first_degree_neibs))]
         travel_distance_avg = np.average(foc_store_time['Time_mins'].to_list())
 
-        logging.info("Focal Store [{}/{}]: Calculating First Neighbor Metrics...".format(foc_store_index+1, len(store_keys_foc_brand)))
+        logging.info("Unique Neib [{}/{}], Focal Store [{}/{}]: Calculating First Neighbor Metrics...".format(unique_neib_index+1,
+                                                                                                              len(unique_neib_brands_foc),
+                                                                                                              foc_store_index+1,
+                                                                                                              len(store_keys_foc_brand)))
         
         if unique_neib in brand_visit_local_reviews_list:
             first_neib_metrics = brand_visit_local_reviews[brand_visit_local_reviews['PLACEKEY'].isin(foc_store_first_degree_neibs)][['PLACEKEY', 'visits_by_day','localized_fb_reviews_60_days','localized_ig_reviews_60_days', 
@@ -363,9 +368,15 @@ for unique_neib_index in range(10):
         first_neib_metrics = first_neib_metrics.rename(columns={0:'focal_store', 1:'inv_visits', 2: 'num_reviews_fb_neibmean', 3:'num_reviews_ig_neibmean', 4:'num_reviews_tw_neibmean',
                                                                 5:'inv_visits_exp', 6:'num_reviews_fb_neibmean_exp', 7: 'num_reviews_ig_neibmean_exp', 8: 'num_reviews_tw_neibmean_exp'})
 
-        logging.info("Focal Store [{}/{}]: First Neighbor Metrics...Done!".format(foc_store_index+1, len(store_keys_foc_brand)))
+        logging.info("Unique Neib [{}/{}], Focal Store [{}/{}]: First Neighbor Metrics...Done!".format(unique_neib_index+1,
+                                                                                                       len(unique_neib_brands_foc),
+                                                                                                       foc_store_index+1,
+                                                                                                       len(store_keys_foc_brand)))
 
-        logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Metrics...".format(foc_store_index+1, len(store_keys_foc_brand)))
+        logging.info("Unique Neib [{}/{}], Focal Store [{}/{}]: Calculating Second Neighbor Metrics...".format(unique_neib_index+1,
+                                                                                                               len(unique_neib_brands_foc),
+                                                                                                               foc_store_index+1,
+                                                                                                               len(store_keys_foc_brand)))
 
         second_neib_df = neib_distance_km[neib_distance_km['SRC_PLACEKEY'].isin(foc_store_first_degree_neibs) &
                                         (~neib_distance_km['DST_BRAND'].isin(foc_store_all_first_degree_neibs_brands)) &
@@ -377,13 +388,19 @@ for unique_neib_index in range(10):
         first_deg_stores_local_reviews = second_neib_df_local_reviews['SRC_PLACEKEY'].unique().tolist()
         second_deg_stores_local_reviews = second_neib_df_local_reviews['DST_PLACEKEY'].unique().tolist()
 
-        logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Visits Data...".format(foc_store_index+1, len(store_keys_foc_brand)))
+        logging.info("Unique Neib [{}/{}], Focal Store [{}/{}]: Calculating Second Neighbor Visits Data...".format(unique_neib_index+1,
+                                                                                                                   len(unique_neib_brands_foc),
+                                                                                                                   foc_store_index+1,
+                                                                                                                   len(store_keys_foc_brand)))
         date_count = 0
         second_neib_brand_stores = brands_visits[brands_visits['PLACEKEY'].isin(second_deg_stores)][['PLACEKEY', 'visits_by_day']]
         second_neib_metrics_visits = second_neib_brand_stores.groupby('date').apply(calculate_second_neib_visits)
         second_neib_metrics_visits = second_neib_metrics_visits.rename(columns={0: 'focal_store', 1:'inv_visits_secondneibmean', 2:'inv_visits_secondneibmean_exp'}).reset_index()
 
-        logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Local Reviews Data...".format(foc_store_index+1, len(store_keys_foc_brand)))
+        logging.info("Unique Neib [{}/{}], Focal Store [{}/{}]: Calculating Second Neighbor Local Reviews Data...".format(unique_neib_index+1,
+                                                                                                                          len(unique_neib_brands_foc),
+                                                                                                                          foc_store_index+1,
+                                                                                                                          len(store_keys_foc_brand)))
         date_count = 0
         second_neib_brand_stores_local_reviews = brand_visit_local_reviews[brand_visit_local_reviews['PLACEKEY'].isin(second_deg_stores_local_reviews)][['PLACEKEY',
                                                                                                                                                         'localized_fb_reviews_60_days',
@@ -395,9 +412,15 @@ for unique_neib_index in range(10):
                                                                                             3: 'num_reviews_tw_secondneibmean', 4: 'num_reviews_fb_secondneibmean_exp',
                                                                                             5: 'num_reviews_ig_secondneibmean_exp', 6: 'num_reviews_tw_secondneibmean_exp'}).reset_index()
         
-        logging.info("Focal Store [{}/{}]: Second Neighbor Metrics...Done!".format(foc_store_index+1, len(store_keys_foc_brand)))
+        logging.info("Unique Neib [{}/{}], Focal Store [{}/{}]: Second Neighbor Metrics...Done!".format(unique_neib_index+1,
+                                                                                                        len(unique_neib_brands_foc),
+                                                                                                        foc_store_index+1,
+                                                                                                        len(store_keys_foc_brand)))
         
-        logging.info("Focal Store [{}/{}]: Compiling Information".format(foc_store_index+1, len(store_keys_foc_brand)))
+        logging.info("Unique Neib [{}/{}], Focal Store [{}/{}]: Compiling Information".format(unique_neib_index+1,
+                                                                                              len(unique_neib_brands_foc),
+                                                                                              foc_store_index+1,
+                                                                                              len(store_keys_foc_brand)))
     
         second_neib_metrics = pd.merge(left=second_neib_metrics_visits, right=second_neib_metrics_local_reviews, how='inner', on=['date', 'focal_store'])
 
@@ -416,7 +439,10 @@ for unique_neib_index in range(10):
         else:
             focal_store_information_final = pd.concat([focal_store_information_final, focal_store_information], axis=0)
 
-        logging.info("Focal Store [{}/{}]: Compilation Done".format(foc_store_index+1, len(store_keys_foc_brand), foc_store))
+        logging.info("Unique Neib [{}/{}], Focal Store [{}/{}]: Compilation Done".format(unique_neib_index+1,
+                                                                                         len(unique_neib_brands_foc),
+                                                                                         foc_store_index+1,
+                                                                                         len(store_keys_foc_brand)))
     
     if len(store_keys_foc_brand) != 0:
         file_path = os.path.join(foc_brand, unique_neib + '.csv')
