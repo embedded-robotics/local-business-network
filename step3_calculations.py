@@ -228,9 +228,7 @@ def calculate_second_neib_visits(group_df):
         second_deg_store_placekey = second_neib_df[second_neib_df['SRC_PLACEKEY'] == first_deg_store]['DST_PLACEKEY'].to_list()
         second_deg_store_distance = second_neib_df[second_neib_df['SRC_PLACEKEY'] == first_deg_store]['Distance_Km'].to_list()        
         
-        # for i in range(len(second_deg_store_placekey)):
-        for i in range(2):
-        
+        for i in range(len(second_deg_store_placekey)):
             visits = group_df[group_df['PLACEKEY'] == second_deg_store_placekey[i]]['visits_by_day']
             if (len(visits) != 0):
                 inv_visits += (1/second_deg_store_distance[i]) * visits.values[0]
@@ -280,8 +278,7 @@ def calculate_second_neib_mean_reviews(group_df):
         second_deg_store_placekey = second_neib_df_local_reviews[second_neib_df_local_reviews['SRC_PLACEKEY'] == first_deg_store]['DST_PLACEKEY'].to_list()
         second_deg_store_distance = second_neib_df_local_reviews[second_neib_df_local_reviews['SRC_PLACEKEY'] == first_deg_store]['Distance_Km'].to_list()
         
-        # for i in range(len(second_deg_store_placekey)):
-        for i in range(2):  
+        for i in range(len(second_deg_store_placekey)):  
             second_neib_brand_stores_local_reviews = group_df[group_df['PLACEKEY'] == second_deg_store_placekey[i]][['localized_fb_reviews_60_days',
                                                                                                                 'localized_ig_reviews_60_days',
                                                                                                                 'localized_tw_reviews_60_days']]
@@ -325,7 +322,7 @@ all_neib_placekey = distance_results[distance_results['From_PLACEKEY'].isin(stor
 unique_neib_brands_foc = brands_visits[brands_visits['PLACEKEY'].isin(all_neib_placekey)]['brand_visitation'].unique().tolist()
 
 # for unique_neib_index in range(len(unique_neib_brands_foc)):
-for unique_neib_index in range(10):
+for unique_neib_index in range(0, 10):
 
     unique_neib = unique_neib_brands_foc[unique_neib_index]
     logging.info("-----------------Performing Calculations for Neighboring Brand [{}/{}]: {} ------------------------".format(unique_neib_index+1, len(unique_neib_brands_foc), unique_neib))
