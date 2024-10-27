@@ -207,11 +207,16 @@ def calculate_second_neib_visits(group_df):
     global foc_store_distance
     global second_neib_df
     global foc_store
+    global foc_store_index
+    global store_keys_foc_brand
     
     inv_visits_secondneibmean = 0
     inv_visits_secondneibmean_exp = 0
     
-    for first_deg_store in first_deg_stores:
+    for first_deg_store_index in range(len(first_deg_stores)):
+        logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Visits Data...[First Degree Store -> {}/{}]".format(foc_store_index+1, len(store_keys_foc_brand),
+                                                                                                                           first_deg_store_index+1, len(first_deg_stores)))
+        first_deg_store = first_deg_stores[first_deg_store_index]
         inv_visits = 0
         inv_visits_exp = 0
         first_deg_store_dist = foc_store_distance[(foc_store_distance['From_PLACEKEY'] == foc_store) & (foc_store_distance['To_PLACEKEY'] == first_deg_store)]['Distance_km'].values[0]
@@ -236,6 +241,8 @@ def calculate_second_neib_mean_reviews(group_df):
     global foc_store_distance
     global second_neib_df_local_reviews
     global foc_store
+    global foc_store_index
+    global store_keys_foc_brand
     
     num_reviews_fb_secondneibmean = 0
     num_reviews_ig_secondneibmean = 0
@@ -244,8 +251,12 @@ def calculate_second_neib_mean_reviews(group_df):
     num_reviews_ig_secondneibmean_exp = 0
     num_reviews_tw_secondneibmean_exp = 0
     
-    for first_deg_store in first_deg_stores_local_reviews:
+    for first_deg_store_index in range(len(first_deg_stores_local_reviews)):
         
+        logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Local Reviews Data...[First Degree Store -> {}/{}]".format(foc_store_index+1, len(store_keys_foc_brand),
+                                                                                                            first_deg_store_index+1, len(first_deg_stores_local_reviews)))
+        
+        first_deg_store = first_deg_stores_local_reviews[first_deg_store_index]
         num_reviews_fb_neibmean = 0
         num_reviews_ig_neibmean = 0
         num_reviews_tw_neibmean = 0
