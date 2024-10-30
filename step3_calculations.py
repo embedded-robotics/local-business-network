@@ -41,8 +41,9 @@ def calculate_first_neib_mean_reviews_visits(group_df):
     num_reviews_ig_neibmean_exp = 0
     num_reviews_tw_neibmean_exp = 0
     
+    foc_store_first_degree_neibs_time = foc_store_time['To_PLACEKEY'].to_list()
     
-    for neib_store in foc_store_first_degree_neibs:
+    for neib_store in foc_store_first_degree_neibs_time:
         neib_store_time = foc_store_time[(foc_store_time['From_PLACEKEY'] == foc_store) & (foc_store_time['To_PLACEKEY'] == neib_store)]['Time_mins'].values[0]
         
         neib_store_reviews = group_df[group_df['PLACEKEY'] == neib_store][['localized_fb_reviews_60_days',
@@ -91,8 +92,9 @@ def calculate_first_neib_visits(group_df):
     num_reviews_ig_neibmean_exp = 0
     num_reviews_tw_neibmean_exp = 0
     
+    foc_store_first_degree_neibs_time = foc_store_time['To_PLACEKEY'].to_list()
     
-    for neib_store in foc_store_first_degree_neibs:
+    for neib_store in foc_store_first_degree_neibs_time:
         neib_store_time = foc_store_time[(foc_store_time['From_PLACEKEY'] == foc_store) & (foc_store_time['To_PLACEKEY'] == neib_store)]['Time_mins'].values[0]
                 
         visits = group_df[group_df['PLACEKEY'] == neib_store]['visits_by_day']
