@@ -345,10 +345,6 @@ def main():
     # Create a directory with the name of focal brand if it does not exist
     if not os.path.exists(foc_brand):
         os.makedirs(foc_brand)
-        
-    store_keys_foc_brand = brand_visit_local_reviews[brand_visit_local_reviews['brand_visitation'] == foc_brand]['PLACEKEY'].unique().tolist()
-    all_neib_placekey = distance_results[distance_results['From_PLACEKEY'].isin(store_keys_foc_brand)]['To_PLACEKEY'].unique().tolist()
-    unique_neib_brands_foc = brands_visits[brands_visits['PLACEKEY'].isin(all_neib_placekey)]['brand_visitation'].unique().tolist()
     
     global start_range
     global end_range
@@ -356,12 +352,20 @@ def main():
     # for unique_neib_index in range(len(unique_neib_brands_foc)):
     for unique_neib_index in range(start_range, end_range):
 
+        store_keys_foc_brand = brand_visit_local_reviews[brand_visit_local_reviews['brand_visitation'] == foc_brand]['PLACEKEY'].unique().tolist()
+        all_neib_placekey = distance_results[distance_results['From_PLACEKEY'].isin(store_keys_foc_brand)]['To_PLACEKEY'].unique().tolist()
+        unique_neib_brands_foc = brands_visits[brands_visits['PLACEKEY'].isin(all_neib_placekey)]['brand_visitation'].unique().tolist()
+        
         unique_neib = unique_neib_brands_foc[unique_neib_index]
-        logging.info("-----------------Performing Calculations for Neighboring Brand [{}/{}]: {} ------------------------".format(unique_neib_index+1, len(unique_neib_brands_foc), unique_neib))
+        logging.info("-----------------Performing Calculations for Neighboring Brand [{}/{}]: {} ------------------------".format(unique_neib_index+1,
+                                                                                                                                  len(unique_neib_brands_foc),
+                                                                                                                                  unique_neib))
+    
         unique_neib_placekeys = brands_visits[brands_visits['brand_visitation'] == unique_neib]['PLACEKEY'].unique().tolist()
         focal_stores_first_degree_neib = distance_results[(distance_results['From_PLACEKEY'].isin(store_keys_foc_brand)) &
                                                         (distance_results['To_PLACEKEY'].isin(unique_neib_placekeys)) &
                                                         (distance_results['Distance_km']<=16.0934)]
+        
         store_keys_foc_brand = focal_stores_first_degree_neib['From_PLACEKEY'].unique().tolist()
         
         focal_store_information_final = None
