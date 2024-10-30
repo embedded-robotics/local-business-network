@@ -1,5 +1,5 @@
 data/*
 *.pickle
-nohup.out
+*.out
 *.csv
 *.pkl
