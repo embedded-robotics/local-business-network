@@ -478,8 +478,7 @@ def main():
                                                                                             len(store_keys_foc_brand_filtered)))
         
         if len(store_keys_foc_brand_filtered) != 0:
-            unique_neib = unique_neib.replace('/', '_')
-            file_path = os.path.join(foc_brand, unique_neib + '.csv')
+            file_path = os.path.join(foc_brand, unique_neib.replace('/', '_') + '.csv')
             focal_store_information_final.to_csv(file_path, index=False)
             logging.info("-----------------Completed calculations for Neighboring Brand [{}/{}]: {} ------------------------".format(unique_neib_index+1, len(unique_neib_brands_foc), unique_neib))
             logging.info("Neighboring Brand [{}/{}]: {} - Storing Information -> {}".format(unique_neib_index+1, len(unique_neib_brands_foc), unique_neib, file_path))
