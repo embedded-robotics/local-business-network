@@ -357,6 +357,14 @@ def main():
     for unique_neib_index in range(start_range, end_range):
 
         unique_neib = unique_neib_brands_foc[unique_neib_index]
+        
+        # Skip the calculations if neighboring brand is equal to focal brand
+        if unique_neib == foc_brand:
+            logging.info("-----------------Skipping Calculations for Neighboring Brand [{}/{}]: {} ------------------------".format(unique_neib_index+1,
+                                                                                                                                  len(unique_neib_brands_foc),
+                                                                                                                                  unique_neib))
+            continue
+        
         logging.info("-----------------Performing Calculations for Neighboring Brand [{}/{}]: {} ------------------------".format(unique_neib_index+1,
                                                                                                                                   len(unique_neib_brands_foc),
                                                                                                                                   unique_neib))
