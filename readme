@@ -1,1 +1,1 @@
-nohup python -u step3_calculations.py 10 20 > range_10_20.out 2>&1
+nohup python -u step3_calculations.py 10 20 > range_10_20_ulta.out 2>&1
