@@ -351,7 +351,7 @@ def main():
 
 
     # %%
-    foc_brand = focal_brands_list[0]
+    foc_brand = focal_brands_list[5]
 
     logging.info("Performing Calculations for Focal Brand: " + str(foc_brand))
     # Create a directory with the name of focal brand if it does not exist
