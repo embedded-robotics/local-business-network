@@ -45,6 +45,7 @@ def calculate_first_neib_mean_reviews_visits(group_df):
     
     for neib_store in foc_store_first_degree_neibs_time:
         neib_store_time = foc_store_time[(foc_store_time['From_PLACEKEY'] == foc_store) & (foc_store_time['To_PLACEKEY'] == neib_store)]['Time_mins'].values[0]
+        neib_store_time = neib_store_time/60 #Converting from minutes to hours
         
         neib_store_reviews = group_df[group_df['PLACEKEY'] == neib_store][['localized_fb_reviews_60_days',
                                                                             'localized_ig_reviews_60_days',
@@ -96,7 +97,8 @@ def calculate_first_neib_visits(group_df):
     
     for neib_store in foc_store_first_degree_neibs_time:
         neib_store_time = foc_store_time[(foc_store_time['From_PLACEKEY'] == foc_store) & (foc_store_time['To_PLACEKEY'] == neib_store)]['Time_mins'].values[0]
-                
+        neib_store_time = neib_store_time/60 #Converting from minutes to hours
+        
         visits = group_df[group_df['PLACEKEY'] == neib_store]['visits_by_day']
         if (len(visits) != 0):
             inv_visits += (1/neib_store_time) * visits.values[0]
@@ -118,6 +120,14 @@ def calculate_second_neib_visits(group_df):
     inv_visits_secondneibmean = 0
     inv_visits_secondneibmean_exp = 0
     date_count = date_count + 1
+
+    # Return these zeros in case there are no second degree neighboring stores which have reviews
+    num_reviews_fb_secondneibmean = 0
+    num_reviews_ig_secondneibmean = 0
+    num_reviews_tw_secondneibmean = 0
+    num_reviews_fb_secondneibmean_exp = 0
+    num_reviews_ig_secondneibmean_exp = 0
+    num_reviews_tw_secondneibmean_exp = 0
 
     if date_count%30 == 0:
         logging.info("Focal Store [{}/{}]: Calculating Second Neighbor Visits Data...[First Degree Stores: {}, Date Count: {}]".format(foc_store_index+1, len(store_keys_foc_brand_filtered),
@@ -141,7 +151,9 @@ def calculate_second_neib_visits(group_df):
         inv_visits_secondneibmean += (1/first_deg_store_dist) * inv_visits
         inv_visits_secondneibmean_exp += (1/np.exp(first_deg_store_dist)) * inv_visits_exp
     
-    return pd.Series([foc_store, inv_visits_secondneibmean, inv_visits_secondneibmean_exp])
+    return pd.Series([foc_store, inv_visits_secondneibmean, inv_visits_secondneibmean_exp,
+                      num_reviews_fb_secondneibmean, num_reviews_ig_secondneibmean, num_reviews_tw_secondneibmean,
+                      num_reviews_fb_secondneibmean_exp, num_reviews_ig_secondneibmean_exp, num_reviews_tw_secondneibmean_exp])
 
 def calculate_second_neib_mean_reviews(group_df):
     
@@ -339,7 +351,7 @@ def main():
 
 
     # %%
-    foc_brand = focal_brands_list[4]
+    foc_brand = focal_brands_list[0]
 
     logging.info("Performing Calculations for Focal Brand: " + str(foc_brand))
     # Create a directory with the name of focal brand if it does not exist
@@ -435,8 +447,14 @@ def main():
                                                                                                                     len(store_keys_foc_brand_filtered)))
             date_count = 0
             second_neib_brand_stores = brands_visits[brands_visits['PLACEKEY'].isin(second_deg_stores)][['PLACEKEY', 'visits_by_day']]
-            second_neib_metrics_visits = second_neib_brand_stores.groupby('date').apply(calculate_second_neib_visits)
-            second_neib_metrics_visits = second_neib_metrics_visits.rename(columns={0: 'focal_store', 1:'inv_visits_secondneibmean', 2:'inv_visits_secondneibmean_exp'}).reset_index()
+            second_neib_metrics_visits = second_neib_brand_stores.groupby('date').apply(calculate_second_neib_visits)            
+            second_neib_metrics_visits = second_neib_metrics_visits.rename(columns={0: 'focal_store', 1:'inv_visits_secondneibmean', 2:'inv_visits_secondneibmean_exp',
+                                                                        3:'num_reviews_fb_secondneibmean', 4:'num_reviews_ig_secondneibmean',
+                                                                        5: 'num_reviews_tw_secondneibmean', 6: 'num_reviews_fb_secondneibmean_exp',
+                                                                        7: 'num_reviews_ig_secondneibmean_exp', 8: 'num_reviews_tw_secondneibmean_exp'}).reset_index()
+
+            if len(second_neib_df_local_reviews) != 0: # only take the first 4 columns if second neighbors exist having local reviews
+                second_neib_metrics_visits = second_neib_metrics_visits.iloc[:,0:4]
 
             logging.info("Unique Neib [{}/{}], Focal Store [{}/{}]: Calculating Second Neighbor Local Reviews Data...".format(unique_neib_index+1,
                                                                                                                             len(unique_neib_brands_foc),
@@ -463,8 +481,11 @@ def main():
                                                                                                 foc_store_index+1,
                                                                                                 len(store_keys_foc_brand_filtered)))
         
-            second_neib_metrics = pd.merge(left=second_neib_metrics_visits, right=second_neib_metrics_local_reviews, how='inner', on=['date', 'focal_store'])
-
+            if len(second_neib_df_local_reviews) != 0: # merge both the visits if local reviews data exist, else, just take the values with zero reviews stored in second_neib_metrics_visits
+                second_neib_metrics = pd.merge(left=second_neib_metrics_visits, right=second_neib_metrics_local_reviews, how='inner', on=['date', 'focal_store'])
+            else:
+                second_neib_metrics = second_neib_metrics_visits
+            
             focal_store_information = brand_visit_local_reviews[brand_visit_local_reviews['PLACEKEY'] == foc_store][['PLACEKEY', 'brand_visitation', 'visits_by_day', 'visits_past_60_days',
                                                                                                                     'localized_fb_reviews_60_days', 'localized_ig_reviews_60_days', 'localized_tw_reviews_60_days']]
             focal_store_information['spatial_distance_km'] = spatial_distance_avg
