@@ -1,1 +1,10 @@
 nohup python -u step3_calculations.py 10 20 > range_10_20_ulta.out 2>&1
+
+['Sephora',
+ 'ULTA Beauty',
+ 'Olive Garden',
+ 'The Cheesecake Factory',
+ 'Target',
+ 'Walmart',
+ 'Anthropologie',
+ "Victoria's Secret"]
